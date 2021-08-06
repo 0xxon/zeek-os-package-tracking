@@ -68,3 +68,11 @@ Copy `os-package-tracking.zeek` into your `site` directory and `@load` it from `
 
 Configure the hosts that are tracked by changing the `OSPTracking::track_hosts` option. By default all hosts are tracked.
 
+## Acknowledgements
+
+This work was supported by the US National Science Foundation under grant [OAC-1642161](https://nsf.gov/awardsearch/showAward?AWD_ID=1642161&HistoricalAwards=false).
+Any opinions, findings, and conclusions or recommendations
+expressed in this material are those of the authors or origina-
+tors, and do not necessarily reflect the views of the National
+Science Foundation.
+
