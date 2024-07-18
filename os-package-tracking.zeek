@@ -156,6 +156,13 @@ function found_package(orig: addr, o: OSInfo, p: PackageVersion, r: RequestInfo)
 # For now - let's be a bit lazy and get the information we want out of the http logging event.
 event HTTP::log_http(i: HTTP::Info)
 	{
+
+	local parts : string_vec;
+	local platform = "";
+	local pi : PackageVersion ;
+	local osi : OSInfo ;
+	local pos : int ;
+
 	if ( ! ( i?$user_agent && i?$host && i?$uri ) )
 		return;
 
@@ -173,18 +180,18 @@ event HTTP::log_http(i: HTTP::Info)
 		# If it is debian security - let's just grep the version and be done.
 		if ( /^\/debian-security\// in i$uri )
 			{
-			local parts = find_all_ordered(i$uri, /[^\/]+/);
+			parts = find_all_ordered(i$uri, /[^\/]+/);
 			if ( |parts| > 3 && parts[1] == "dists" )
 				{
-				local platform = "";
+				platform = "";
 				if ( |parts| > 5 && /^binary-/ in parts[5] )
 					platform = sub_bytes(parts[5],8, -1);
 				found_os(i$id$orig_h, "Debian", parts[2], platform, RequestInfo($ts=i$ts, $user_agent=i$user_agent, $host=i$host, $uri=i$uri));
 				}
 			else if ( |parts| == 7 && parts[1] == "pool" && parts[2] == "updates" && /\.deb$/ in parts[6] )
 				{
-				local pi = parse_debian_package_version(sub_bytes(parts[6], 1, |parts[6]|-4));
-				local osi = OSInfo($host=i$id$orig_h, $os="Debian", $request=req);
+				pi = parse_debian_package_version(sub_bytes(parts[6], 1, |parts[6]|-4));
+				osi = OSInfo($host=i$id$orig_h, $os="Debian", $request=req);
 				if ( ! pi$invalid )
 					found_package(i$id$orig_h, osi, pi, req);
 				}
@@ -205,7 +212,7 @@ event HTTP::log_http(i: HTTP::Info)
 			parts = find_all_ordered(i$uri, /[^\/]+/);
 			if ( |parts| > 3 && parts[1] == "dists" && /-/ in parts[2] )
 				{
-				local pos = find_str(parts[2], "-");
+				pos = find_str(parts[2], "-");
 				platform = "";
 				if ( |parts| > 5 && /^binary-/ in parts[4] )
 					platform = sub_bytes(parts[4],8, -1);
